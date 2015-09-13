@@ -1,4 +1,4 @@
-function MakeGraph(folder)
+function MakeGraph(folder,mcmode)
 %MakeGraph(folder)
 %
 %   Make a graph with neurons as nodes where edges are defined by the top
@@ -15,15 +15,30 @@ function MakeGraph(folder)
     neuronid = 1:NumNeurons;
     thresh = 99;    %Percentile of significant correlation coefficients. 
     width = 2;      %Constant multiplying correlation coefficient to determine edge thickness. 
+    areafactor = 10;%Constant multiplying vertex area. 
     
 %% 
     %Perform pairwise correlations between neurons. 
     [R,pval] = corr(FT'); 
     
+    %Get significance level. 
+    switch lower(mcmode)
+        case 'fdr'
+            pforfdr = triu(pval); 
+            pforfdr(pforfdr==0 & pval~=0) = nan;    %Remove bottom triangle of matrix. 
+            pforfdr = pforfdr(:);
+            pforfdr(isnan(pforfdr)) = []; 
+            [~,crit,~] = fdr_bh(pforfdr);           %Get false discovery rate threshold.
+        case 'bonferroni'
+            n = (NumNeurons-1)*NumNeurons/2; 
+            crit = 0.05/n;
+    end
+            
+
     %Shape the correlation coefficient matrix. 
     sparseR = triu(R);                  %Upper triangle of matrix. 
     sparseR(sparseR==0 & R~=0) = nan;   %Turn zeros into NaNs. 
-    sparseR(pval>0.05) = nan;           %Remove insignificant correlations. Includes diag. 
+    sparseR(pval>crit) = nan;           %Remove insignificant correlations. Includes diag. 
     lim = prctile(sparseR(:),thresh);   %Define threshold. 
     sparseR(sparseR<lim) = nan;         %Threshold.  
     
@@ -70,17 +85,20 @@ function MakeGraph(folder)
         %Draw edges. 
         line([centroids(cellone,1),centroids(celltwo,1)],...
             [centroids(cellone,2),centroids(celltwo,2)],...
-            'Linewidth',width*sparseR(cellone,celltwo),...
+            'Linewidth',width*abs(sparseR(cellone,celltwo)),...
             'Color',edgecolor);
     end
     
     %Overlay nodes. 
-    scatter(centroids(goodneurons,1),centroids(goodneurons,2),'filled'); 
+    scatter(centroids(goodneurons,1),centroids(goodneurons,2),...
+        areafactor*deg(goodneurons),'filled'); 
     hold off; 
     
     axis tight; 
     set(gca, 'visible', 'off') ;
     print(h,'Graph','-dpdf','-r0');
+    
+    keyboard;
    
 end
     
