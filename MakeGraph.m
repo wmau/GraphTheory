@@ -14,7 +14,7 @@ function MakeGraph(folder)
     NumNeurons = size(FT,1); 
     neuronid = 1:NumNeurons;
     thresh = 99;    %Percentile of significant correlation coefficients. 
-    width = 3;      %Constant multiplying correlation coefficient to determine edge thickness. 
+    width = 2;      %Constant multiplying correlation coefficient to determine edge thickness. 
     
 %% 
     %Perform pairwise correlations between neurons. 
@@ -31,17 +31,28 @@ function MakeGraph(folder)
     [r,c] = find(~isnan(sparseR)); 
     badneurons = ~ismember(neuronid,r) & ~ismember(neuronid,c);
     goodneurons = ~badneurons;
-        
+    
+    %Get degree list. 
+    A = R; 
+    A(A<lim) = 0; 
+    A(A>lim) = 1; 
+    deg = sum(A,2); 
+    
 %% Get neuron centroids. 
     props = cellfun(@regionprops,NeuronImage); 
     temp = extractfield(props,'Centroid'); 
     centroids = [temp(1:2:end)', temp(2:2:end)']; 
     
 %% Plot.
-    h = figure(2);
+    h = figure;
     set(h,'Units','Inches'); 
     pos = get(h,'Position'); 
     set(h,'PaperPositionMode','Auto','PaperUnits','Inches','PaperSize',[pos(3), pos(4)]);
+    
+    %For showing projection. 
+    %minproj = imread(fullfile(folder,'ICmovie_min_proj.tif')); 
+    %imshow(minproj,[]);
+    hold on;
     
     %Plot edges.
     numedges = length(r); 
@@ -62,7 +73,6 @@ function MakeGraph(folder)
             'Linewidth',width*sparseR(cellone,celltwo),...
             'Color',edgecolor);
     end
-    hold on;
     
     %Overlay nodes. 
     scatter(centroids(goodneurons,1),centroids(goodneurons,2),'filled'); 
