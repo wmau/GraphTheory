@@ -1,4 +1,4 @@
-function MakeGraph(folder)
+function [A,d] = MakeGraph(folder,downsample)
 %MakeGraph(folder)
 %
 %   Make a graph with neurons as nodes where edges are defined by the top
@@ -7,6 +7,9 @@ function MakeGraph(folder)
 %   INPUT
 %       folder: Directory containing ProcOut.
 %
+%       downsample: 0 or 1 describing whether or not you want to set a
+%       percentile threshold for correlation coefficients to define an
+%       edge.
 
 %% Initialize. 
     %Load the appropriate variables. 
@@ -16,6 +19,10 @@ function MakeGraph(folder)
     thresh = 99;    %Percentile of significant correlation coefficients. 
     width = 2;      %Constant multiplying correlation coefficient to determine edge thickness. 
     
+    %Determine critical p-value. 
+    n = NumNeurons*(NumNeurons-1)/2; 
+    crit = 0.05/n;
+
 %% 
     %Perform pairwise correlations between neurons. 
     [R,pval] = corr(FT'); 
@@ -23,9 +30,12 @@ function MakeGraph(folder)
     %Shape the correlation coefficient matrix. 
     sparseR = triu(R);                  %Upper triangle of matrix. 
     sparseR(sparseR==0 & R~=0) = nan;   %Turn zeros into NaNs. 
-    sparseR(pval>0.05) = nan;           %Remove insignificant correlations. Includes diag. 
-    lim = prctile(sparseR(:),thresh);   %Define threshold. 
-    sparseR(sparseR<lim) = nan;         %Threshold.  
+    sparseR(pval>crit) = nan;           %Remove insignificant correlations. Includes diag.
+    
+    if downsample
+        lim = prctile(sparseR(:),thresh);   %Define threshold. 
+        sparseR(sparseR<lim) = nan;         %Threshold.  
+    end
     
     %Find neurons that connect to other neurons. 
     [r,c] = find(~isnan(sparseR)); 
@@ -34,9 +44,14 @@ function MakeGraph(folder)
     
     %Get degree list. 
     A = R; 
-    A(A<lim) = 0; 
-    A(A>lim) = 1; 
-    deg = sum(A,2); 
+    if downsample
+        A(A<lim) = 0; 
+        A(A>lim) = 1; 
+    else
+        A(pval>crit) = 0;
+        A(pval<crit) = 1; 
+    end
+    d = sum(A,2); 
     
 %% Get neuron centroids. 
     props = cellfun(@regionprops,NeuronImage); 
