@@ -1,5 +1,5 @@
-function [A,d] = MakeGraph(folder,downsample,mcmode)
-%[A,d] = MakeGraph(folder,downsample,mcmode)
+function [A,d] = MakeGraph(folder,downsample)
+%MakeGraph(folder)
 %
 %   Make a graph with neurons as nodes where edges are defined by the top
 %   1% of statistically significant correlation coefficients. 
@@ -8,10 +8,7 @@ function [A,d] = MakeGraph(folder,downsample,mcmode)
 %       folder: Directory containing ProcOut.
 %
 %       downsample: 0 or 1 describing whether or not you want to set a
-%       percentile threshold for correlation coefficients to define an
-%       edge.
-%
-%       mcmode: 'Bonferroni' or 'FDR'. 
+%       percentile threshold for correlation coefficients to define a
 
 %% Initialize. 
     %Load the appropriate variables. 
@@ -20,7 +17,6 @@ function [A,d] = MakeGraph(folder,downsample,mcmode)
     neuronid = 1:NumNeurons;
     thresh = 99;    %Percentile of significant correlation coefficients. 
     width = 2;      %Constant multiplying correlation coefficient to determine edge thickness. 
-    areafactor = 10;%Constant multiplying vertex area. 
     
     %Determine critical p-value. 
     n = NumNeurons*(NumNeurons-1)/2; 
@@ -30,20 +26,6 @@ function [A,d] = MakeGraph(folder,downsample,mcmode)
     %Perform pairwise correlations between neurons. 
     [R,pval] = corr(FT'); 
     
-    %Get significance level. 
-    switch lower(mcmode)
-        case 'fdr'
-            pforfdr = triu(pval); 
-            pforfdr(pforfdr==0 & pval~=0) = nan;    %Remove bottom triangle of matrix. 
-            pforfdr = pforfdr(:);
-            pforfdr(isnan(pforfdr)) = []; 
-            [~,crit,~] = fdr_bh(pforfdr);           %Get false discovery rate threshold.
-        case 'bonferroni'
-            n = (NumNeurons-1)*NumNeurons/2; 
-            crit = 0.05/n;
-    end
-            
-
     %Shape the correlation coefficient matrix. 
     sparseR = triu(R);                  %Upper triangle of matrix. 
     sparseR(sparseR==0 & R~=0) = nan;   %Turn zeros into NaNs. 
@@ -53,7 +35,7 @@ function [A,d] = MakeGraph(folder,downsample,mcmode)
         lim = prctile(sparseR(:),thresh);   %Define threshold. 
         sparseR(sparseR<lim) = nan;         %Threshold.  
     end
-
+    
     %Find neurons that connect to other neurons. 
     [r,c] = find(~isnan(sparseR)); 
     badneurons = ~ismember(neuronid,r) & ~ismember(neuronid,c);
@@ -102,20 +84,17 @@ function [A,d] = MakeGraph(folder,downsample,mcmode)
         %Draw edges. 
         line([centroids(cellone,1),centroids(celltwo,1)],...
             [centroids(cellone,2),centroids(celltwo,2)],...
-            'Linewidth',width*abs(sparseR(cellone,celltwo)),...
+            'Linewidth',width*sparseR(cellone,celltwo),...
             'Color',edgecolor);
     end
     
     %Overlay nodes. 
-    scatter(centroids(goodneurons,1),centroids(goodneurons,2),...
-        areafactor*deg(goodneurons),'filled'); 
+    scatter(centroids(goodneurons,1),centroids(goodneurons,2),'filled'); 
     hold off; 
     
     axis tight; 
     set(gca, 'visible', 'off') ;
     print(h,'Graph','-dpdf','-r0');
-    
-    keyboard;
    
 end
     
