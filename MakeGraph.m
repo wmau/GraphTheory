@@ -1,4 +1,4 @@
-function [A,R,d,centroids] = MakeGraph(folder,downsample,plot)
+function [A,R,d,centroids] = MakeGraph(folder,downsample,plot,mcmode)
 %[A,R,d] = MakeGraph(folder,downsample,plot)
 %
 %   Make a graph with neurons as nodes where edges are defined by the top
@@ -20,6 +20,7 @@ function [A,R,d,centroids] = MakeGraph(folder,downsample,plot)
 %
 %       d: Degrees per node. 
 %
+%       mcmode: 'Bonferroni' or 'FDR'. 
 
 %% Initialize. 
     %Load the appropriate variables. 
@@ -28,6 +29,7 @@ function [A,R,d,centroids] = MakeGraph(folder,downsample,plot)
     neuronid = 1:NumNeurons;
     thresh = 99;    %Percentile of significant correlation coefficients. 
     width = 2;      %Constant multiplying correlation coefficient to determine edge thickness. 
+    areafactor = 10;%Constant multiplying vertex area. 
     
     %Determine critical p-value. 
     n = NumNeurons*(NumNeurons-1)/2; 
@@ -38,6 +40,20 @@ function [A,R,d,centroids] = MakeGraph(folder,downsample,plot)
     [R,pval] = corrcoef(FT'); 
     A = R;
     
+    %Get significance level. 
+    switch lower(mcmode)
+        case 'fdr'
+            pforfdr = triu(pval); 
+            pforfdr(pforfdr==0 & pval~=0) = nan;    %Remove bottom triangle of matrix. 
+            pforfdr = pforfdr(:);
+            pforfdr(isnan(pforfdr)) = []; 
+            [~,crit,~] = fdr_bh(pforfdr);           %Get false discovery rate threshold.
+        case 'bonferroni'
+            n = (NumNeurons-1)*NumNeurons/2; 
+            crit = 0.05/n;
+    end
+            
+
     %Shape the correlation coefficient matrix. 
     sparseR = triu(R);                  %Upper triangle of matrix. 
     sparseR(sparseR==0 & R~=0) = nan;   %Turn zeros into NaNs. 
@@ -49,7 +65,7 @@ function [A,R,d,centroids] = MakeGraph(folder,downsample,plot)
         sparseR(sparseR<lim) = nan;         %Threshold.  
         R(R<lim) = nan;
     end
-    
+
     %Find neurons that connect to other neurons. 
     [r,c] = find(~isnan(sparseR)); 
     badneurons = ~ismember(neuronid,r) & ~ismember(neuronid,c);
@@ -101,15 +117,18 @@ function [A,R,d,centroids] = MakeGraph(folder,downsample,plot)
                 'Linewidth',width*sparseR(cellone,celltwo),...
                 'Color',edgecolor);
         end
+
     
-        %Overlay nodes. 
-        scatter(centroids(goodneurons,1),centroids(goodneurons,2),'filled'); 
-        hold off; 
-
-        axis tight; 
-        set(gca, 'visible', 'off') ;
-        print(h,'Graph','-dpdf','-r0');
+    %Overlay nodes. 
+    scatter(centroids(goodneurons,1),centroids(goodneurons,2),...
+        areafactor*deg(goodneurons),'filled'); 
+    hold off; 
+    
+    axis tight; 
+    set(gca, 'visible', 'off') ;
+    print(h,'Graph','-dpdf','-r0');
+    
     end
-
+   
 end
     
