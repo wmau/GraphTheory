@@ -1,5 +1,5 @@
-function [A,R,d,centroids] = MakeGraph(folder,downsample,plot,mcmode)
-%[A,R,d] = MakeGraph(folder,downsample,plot)
+function [A,R,d,p,centroids,dFF] = MakeGraph(sessionStruct,downsample,plot,mcmode)
+%[A,R,d,p,centroids,dFF] = MakeGraph(folder,downsample,plot,mcmode)
 %
 %   Make a graph with neurons as nodes where edges are defined by the top
 %   1% of statistically significant correlation coefficients. 
@@ -13,6 +13,8 @@ function [A,R,d,centroids] = MakeGraph(folder,downsample,plot,mcmode)
 %
 %       plot: 0 or 1 describing whether or not you want to plot the graph.
 %
+%       mcmode: 'Bonferroni' or 'FDR'. 
+%
 %   OUTPUTS
 %       A: Adjacency matrix. 
 %
@@ -20,31 +22,29 @@ function [A,R,d,centroids] = MakeGraph(folder,downsample,plot,mcmode)
 %
 %       d: Degrees per node. 
 %
-%       mcmode: 'Bonferroni' or 'FDR'. 
+%       
+%
 
 %% Initialize. 
     %Load the appropriate variables. 
+    folder = sessionStruct.Location; 
     load(fullfile(folder,'ProcOut.mat'),'FT','NeuronImage'); 
     NumNeurons = size(FT,1); 
     neuronid = 1:NumNeurons;
-    thresh = 99;    %Percentile of significant correlation coefficients. 
-    width = 2;      %Constant multiplying correlation coefficient to determine edge thickness. 
-    areafactor = 10;%Constant multiplying vertex area. 
-    
-    %Determine critical p-value. 
-    n = NumNeurons*(NumNeurons-1)/2; 
-    crit = 0.05/n;
+    thresh = 99;        %Percentile of significant correlation coefficients. 
+    width = 0.1;        %Constant multiplying correlation coefficient to determine edge thickness. 
+    areafactor = 0.5;   %Constant multiplying vertex area. 
 
-%% 
+%% Do pairwise correlations and set thresholds. 
     %Perform pairwise correlations between neurons. 
-    [R,pval] = corrcoef(FT'); 
+    [R,p,dFF] = corrdFFs(sessionStruct);  
     A = R;
     
     %Get significance level. 
     switch lower(mcmode)
         case 'fdr'
-            pforfdr = triu(pval); 
-            pforfdr(pforfdr==0 & pval~=0) = nan;    %Remove bottom triangle of matrix. 
+            pforfdr = triu(p); 
+            pforfdr(pforfdr==0 & p~=0) = nan;       %Remove bottom triangle of matrix. 
             pforfdr = pforfdr(:);
             pforfdr(isnan(pforfdr)) = []; 
             [~,crit,~] = fdr_bh(pforfdr);           %Get false discovery rate threshold.
@@ -53,12 +53,12 @@ function [A,R,d,centroids] = MakeGraph(folder,downsample,plot,mcmode)
             crit = 0.05/n;
     end
             
-
+%% Create A. 
     %Shape the correlation coefficient matrix. 
     sparseR = triu(R);                  %Upper triangle of matrix. 
     sparseR(sparseR==0 & R~=0) = nan;   %Turn zeros into NaNs. 
-    sparseR(pval>crit) = nan;           %Remove insignificant correlations. Includes diag.
-    R(pval>crit) = 0; 
+    sparseR(p>crit) = nan;              %Remove insignificant correlations. Includes diag.
+    R(p>crit) = 0; 
     
     if downsample
         lim = prctile(sparseR(:),thresh);   %Define threshold. 
@@ -76,9 +76,10 @@ function [A,R,d,centroids] = MakeGraph(folder,downsample,plot,mcmode)
         A(A<lim) = 0; 
         A(A>lim) = 1; 
     else
-        A(pval>crit) = 0;
-        A(pval<crit) = 1; 
+        A(p>crit) = 0;
+        A(p<crit) = 1; 
     end
+    A(isnan(A)) = 0; 
     d = sum(A,2); 
     
 %% Get neuron centroids. 
@@ -112,23 +113,27 @@ function [A,R,d,centroids] = MakeGraph(folder,downsample,plot,mcmode)
             end
 
             %Draw edges. 
-            line([centroids(cellone,1),centroids(celltwo,1)],...
+            patchline([centroids(cellone,1),centroids(celltwo,1)],...
                 [centroids(cellone,2),centroids(celltwo,2)],...
-                'Linewidth',width*sparseR(cellone,celltwo),...
-                'Color',edgecolor);
+                'Linewidth',width*abs(sparseR(cellone,celltwo)),...
+                'edgecolor',edgecolor,'Edgealpha',0.2);
         end
 
     
     %Overlay nodes. 
     scatter(centroids(goodneurons,1),centroids(goodneurons,2),...
-        areafactor*deg(goodneurons),'filled'); 
+        areafactor*d(goodneurons),'filled'); 
     hold off; 
     
     axis tight; 
-    set(gca, 'visible', 'off') ;
+    set(gca, 'visible', 'off');
     print(h,'Graph','-dpdf','-r0');
     
     end
+    
+    R(isnan(R)) = 0; 
+    
+    save('Graph.mat','A','R','d','p','centroids','dFF'); 
    
 end
     
