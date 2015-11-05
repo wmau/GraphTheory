@@ -1,0 +1,72 @@
+function eigPlaceCells(A,sessionStruct,bootstrap)
+%
+%
+%
+
+%% 
+    %Get filepath.
+    path = sessionStruct.Location; 
+    
+    %Load place field data. 
+    load(fullfile(path,'PlaceMaps.mat'),'pval'); 
+    
+    %Get eigenvector centrality of each neuron. 
+    eCent = eigencentrality(A); 
+    
+    %Get indices of place cells. 
+    PCs = pval>0.95; 
+    nPCs = sum(PCs); 
+    
+    %Plot CDF of place cell eigenvector centralities and non-place cell
+    %eigenvector centralities. 
+    figure; 
+    ecdf(eCent(PCs)); 
+        hold on;
+    ecdf(eCent(~PCs)); 
+        hold off;
+        title('Eigenvector Centralities'); 
+        xlabel('Centrality score'); ylabel('Proportion'); 
+        legend({'Place Cells','Non-Place Cells'},'Location','Southeast'); 
+        set(gca,'TickDir','out');
+        lines = get(gca,'children'); 
+        set(lines(1),'color','k','linewidth',2); 
+        set(lines(2),'color',[0.7 0.7 0.7],'linewidth',2); 
+        
+    %Histogram.
+    [~,edges] = histcounts(eCent(PCs),20); 
+    PCcount = histc(eCent(PCs),edges)/nPCs; 
+    nonPCcount = histc(eCent(~PCs),edges)/sum(~PCs); 
+    figure;
+    stairs(edges,PCcount,'linewidth',2,'color','k'); 
+        hold on;
+    stairs(edges,nonPCcount,'linewidth',2,'color',[0.7,0.7,0.7]); 
+        hold off; 
+        title('Eigenvector Centralities'); 
+        xlabel('Centrality score'); ylabel('Proportion'); 
+        legend({'Place Cells','Non-Place Cells'},'Location','Northeast'); 
+        set(gca,'TickDir','out');
+             
+        
+    if bootstrap
+        B = 10000; 
+        
+        nonPCs = find(~PCs); 
+        null = nan(1,B); 
+        
+        for i=1:B
+            randNeurons = randsample(nonPCs,nPCs); 
+            null(i) = mean(eCent(randNeurons)); 
+        end
+    end
+    
+    emp = mean(eCent(PCs)); 
+    disp(['P-value: ', num2str(sum(emp<null)/B)]); 
+
+    figure;
+    histogram(null,30); 
+        hold on;
+    lims = get(gca,'ylim'); 
+    line([emp,emp],[0,lims(2)],'color','r','linewidth',2);
+    keyboard;
+    
+end

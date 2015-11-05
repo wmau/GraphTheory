@@ -127,13 +127,13 @@ function [A,R,d,p,centroids,dFF] = MakeGraph(sessionStruct,downsample,plot,mcmod
     
     axis tight; 
     set(gca, 'visible', 'off');
-    print(h,'Graph','-dpdf','-r0');
+    %print(h,'Graph','-dpdf','-r0');
     
     end
     
     R(isnan(R)) = 0; 
     
-    save('Graph.mat','A','R','d','p','centroids','dFF'); 
+    %save('Graph.mat','A','R','d','p','centroids','dFF'); 
    
 end
     
