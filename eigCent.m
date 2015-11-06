@@ -1,7 +1,8 @@
-function eigCent(A,ind,bootstrap)
+function eCent = eigCent(A,ind,bootstrap)
+%eCent = eigCent(A,ind,bootstrap)
 %
-%
-%
+%   Calculates the eigenvector centrality of each node in the network and
+%   plots the CDF and histogram of 
 
 %% 
     %Get eigenvector centrality of each neuron. 
@@ -12,7 +13,7 @@ function eigCent(A,ind,bootstrap)
     nNeurons = length(ind); 
     
     %Plot CDF of eigenvector centralities.
-    figure(111); 
+    figure; 
     ecdf(eCent(ind)); 
         hold on;
     ecdf(eCent(~ind)); 
@@ -28,7 +29,7 @@ function eigCent(A,ind,bootstrap)
     [~,edges] = histcounts(eCent(ind),15); 
     PCcount = histc(eCent(ind),edges)/nind; 
     nonPCcount = histc(eCent(~ind),edges)/sum(~ind); 
-    figure(222);
+    figure;
         hold on;
     stairs(edges,PCcount,'linewidth',2,'color','k');     
     stairs(edges,nonPCcount,'linewidth',2,'color',[0.7,0.7,0.7]); 
@@ -60,7 +61,7 @@ function eigCent(A,ind,bootstrap)
         disp(['P-value: ', num2str(sum(emp<null)/B)]); 
 
         %Histogram of null and empirical value. 
-        figure(333);
+        figure;
         histogram(null,30,'normalization','probability','facecolor','k'); 
             hold on;
         lims = get(gca,'ylim'); 

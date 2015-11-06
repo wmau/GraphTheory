@@ -1,4 +1,4 @@
-function eigPlaceCells(A,sessionStruct,bootstrap)
+function [eCent,PCs] = eigPlaceCells(A,sessionStruct,bootstrap)
 %
 %
 %
@@ -13,9 +13,6 @@ function eigPlaceCells(A,sessionStruct,bootstrap)
     %Get indices of place cells. 
     PCs = pval>0.95; 
     
-    eigCent(A,PCs,bootstrap);
-        figure(111); 
-            legend({'Place Cells','Non-Place Cells'},'Location','Southeast'); 
-        figure(222); 
-            legend({'Place Cells','Non-Place Cells'},'Location','Northeast'); 
+    eCent = eigCent(A,PCs,bootstrap);
+
 end
