@@ -2,7 +2,8 @@ function eCent = eigCent(A,ind,bootstrap)
 %eCent = eigCent(A,ind,bootstrap)
 %
 %   Calculates the eigenvector centrality of each node in the network and
-%   plots the CDF and histogram of 
+%   plots the CDF and histogram of all the neurons compared to a subset of
+%   neurons. 
 
 %% 
     %Get eigenvector centrality of each neuron. 
