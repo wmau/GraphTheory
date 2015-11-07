@@ -10,7 +10,7 @@ function [r,p] = corrPhysMetricCentrality(sessionStruct,centralitytype,celltype)
     ind = getChampionInds(sessionStruct,celltype); 
     
     switch celltype
-        case 'sigspatialinfo'
+        case {'sigspatialinfo','nonsigspatialinfo'}
             load(fullfile(sessionStruct.Location,'SpatialInfo.mat'),'I'); 
     end
     
