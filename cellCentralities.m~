@@ -13,12 +13,7 @@ function cellCentralities(sessionStruct,centralitytype,ind,celltype)
 %
 %       centralitytype: 'eigenvector' or 'betweenness'.
 %
-%       ind: Index of the neurons of interest. Use getChampionInds.m. 
-%
-%       celltype: 'splitter,' 'sigspatialinfo,' 'nonsigspatialinfo,' or
-%       'place.' Only used for legends. 
-%
-%   
+%       ind: Index of the neurons of interest. Use getChampionI
 
 %% Setup.
     cent = parseCentrality(sessionStruct,centralitytype); 

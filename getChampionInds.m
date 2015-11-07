@@ -1,9 +1,23 @@
 function ind = getChampionInds(sessionStruct,celltype)
+%ind = getChampionInds(sessoinStruct,celltype)
 %
+%   Extracts the indices of the giant component of the network graph that
+%   reference neurons of interest. 
 %
+%   INPUTS
+%       sessionStruct: MD entry. 
+%
+%      celltype: 'splitter,' 'sigspatialinfo,' 'nonsigspatialinfo,' or
+%       'place.'
+%
+%   OUTPUT
+%       ind: Nx1 vector (N=number of nodes in giant component) ndexing the
+%       giant component of the network graph that correspond to the type of
+%       neuron specified.
 %
 
-%% 
+
+%% Parse the cell type. 
     path = sessionStruct.Location;
     
     load(fullfile(path,'GraphRigor.mat'),'gc_nodes'); 

@@ -1,7 +1,8 @@
 function [r,p] = corrPhysMetricCentrality(sessionStruct,centralitytype,celltype)
+%[r,p] = corrPhysMetricCentrality(sessionStruct,centralitytype,celltype)
 %
-%
-%
+%   This is a generalized function that allows you to correlate arbitrary
+%   neurophysiological 
 
 %%
     cent = parseCentrality(sessionStruct,centralitytype); 
@@ -10,14 +11,15 @@ function [r,p] = corrPhysMetricCentrality(sessionStruct,centralitytype,celltype)
     ind = getChampionInds(sessionStruct,celltype); 
     
     switch celltype
-        case 'sigspatialinfo'
+        case {'sigspatialinfo','nonsigspatialinfo'}
             load(fullfile(sessionStruct.Location,'SpatialInfo.mat'),'I'); 
     end
     
     [r,p] = corr(cent(ind),I(ind),'type','spearman'); 
-    disp(['Rho = ',num2str(r),', pv
+    disp(['Rho = ',num2str(r),', p-value = ',num2str(p)]); 
     
     scatter(cent(ind),I(ind),10); 
         lsline; 
         xlabel([centStr, ' Centrality Score']); ylabel('Spatial Information [bits/s]'); 
+        set(gca,'tickdir','out'); 
 end
