@@ -51,7 +51,7 @@ function cellCentralities(sessionStruct,centralitytype,ind)
         set(gca,'TickDir','out');    
         
 %% Bootstrap. 
-    %Prealloacte. 
+    %Preallocate. 
     null = nan(1,B); 
 
     %Randomly sample from non-place cell ECs. 
