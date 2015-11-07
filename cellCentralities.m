@@ -30,7 +30,14 @@ function cellCentralities(sessionStruct,centralitytype,ind,celltype)
     centStr = [upper(centralitytype(1)),centralitytype(2:end)];
     cellStr = [upper(celltype(1)),celltype(2:end)];
     B = 10000;                  %Shuffle iterations. 
-    area = 500;
+    area = 100/max(cent); 
+    
+    %Betweenness centrality contains zeros. Make them tiny for the
+    %scatterplot, but nonzero. 
+    if strcmpi(centralitytype,'betweenness')
+        zerocent = cent==0;
+        cent(zerocent) = 0.001; 
+    end
 
 %% Highlight the champion neurons
     centroids = centroids(gc_nodes,:); 
@@ -42,6 +49,11 @@ function cellCentralities(sessionStruct,centralitytype,ind,celltype)
         hold off; 
         axis tight;
         set(gca,'visible','off'); 
+        
+    %Turn 0 betweeness centralities back to zero. 
+    if strcmpi(centralitytype,'betweenness')
+        cent(zerocent) = 0; 
+    end
     
 %% CDF. 
     figure;

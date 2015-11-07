@@ -13,18 +13,38 @@ function cellCentralities(sessionStruct,centralitytype,ind,celltype)
 %
 %       centralitytype: 'eigenvector' or 'betweenness'.
 %
-%       ind: Index of the neurons of interest. Use getChampionI
+%       ind: Index of the neurons of interest. Use getChampionInds.m. 
+%
+%       celltype: 'splitter,' 'sigspatialinfo,' 'nonsigspatialinfo,' or
+%       'place.' Only used for legends. 
+%
+
 
 %% Setup.
     cent = parseCentrality(sessionStruct,centralitytype); 
-    load(fullfile(sessionStruct.Location,'GraphRigor.mat'),'gc_nodes'); 
+    load(fullfile(sessionStruct.Location,'GraphRigor.mat'),'gc_nodes','centroids'); 
     
     %Useful variables. 
     nInd = sum(ind);            %Number of neurons of interest.
-    pool = gc_nodes;            %Pool form which you're sampling. 
+    pool = length(ind);         %Pool form which you're sampling. 
     centStr = [upper(centralitytype(1)),centralitytype(2:end)];
     cellStr = [upper(celltype(1)),celltype(2:end)];
     B = 10000;                  %Shuffle iterations. 
+    
+    switch centralitytype
+        case 'eigenvector'
+            
+
+%% Highlight the champion neurons
+    centroids = centroids(gc_nodes,:); 
+    figure;
+    scatter(centroids(ind,1),centroids(ind,2),area*cent(ind),'g','filled',...
+        'markeredgecolor','r'); 
+        hold on;
+    scatter(centroids(~ind,1),centroids(~ind,2),area*cent(~ind),'g','filled'); 
+        hold off; 
+        axis tight;
+        set(gca,'visible','off'); 
     
 %% CDF. 
     figure;
