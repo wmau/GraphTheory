@@ -18,7 +18,7 @@ function cellCentralities(sessionStruct,centralitytype,ind,celltype)
 %       celltype: 'splitter,' 'sigspatialinfo,' 'nonsigspatialinfo,' or
 %       'place.' Only used for legends. 
 %
-%   
+
 
 %% Setup.
     cent = parseCentrality(sessionStruct,centralitytype); 
@@ -26,7 +26,7 @@ function cellCentralities(sessionStruct,centralitytype,ind,celltype)
     
     %Useful variables. 
     nInd = sum(ind);            %Number of neurons of interest.
-    pool = gc_nodes;            %Pool form which you're sampling. 
+    pool = length(ind);         %Pool form which you're sampling. 
     centStr = [upper(centralitytype(1)),centralitytype(2:end)];
     cellStr = [upper(celltype(1)),celltype(2:end)];
     B = 10000;                  %Shuffle iterations. 
