@@ -42,6 +42,7 @@ function cellCentralities(sessionStruct,centralitytype,ind,celltype)
 %% Highlight the champion neurons
     centroids = centroids(gc_nodes,:); 
     figure;
+    subplot(2,2,1);
     scatter(centroids(ind,1),centroids(ind,2),area*cent(ind),'g','filled',...
         'markeredgecolor','r'); 
         hold on;
@@ -56,7 +57,7 @@ function cellCentralities(sessionStruct,centralitytype,ind,celltype)
     end
     
 %% CDF. 
-    figure;
+    subplot(2,2,2);
     ecdf(cent(ind)); 
         hold on;
     ecdf(cent(~ind)); 
@@ -73,7 +74,7 @@ function cellCentralities(sessionStruct,centralitytype,ind,celltype)
     [~,edges] = histcounts(cent(ind),15); 
     chmpCount = histc(cent(ind),edges)/nInd; 
     nonChmpCount = histc(cent(~ind),edges)/sum(~ind); 
-    figure;
+    subplot(2,2,3);
         hold on;
     stairs(edges,chmpCount,'linewidth',2,'color','k');     
     stairs(edges,nonChmpCount,'linewidth',2,'color',[0.7,0.7,0.7]); 
@@ -101,7 +102,7 @@ function cellCentralities(sessionStruct,centralitytype,ind,celltype)
     disp(['P-value: ', num2str(sum(emp<null)/B)]); 
 
     %Histogram of null and empirical value. 
-    figure;
+    subplot(2,2,4);
     histogram(null,30,'normalization','probability','facecolor','k'); 
         hold on;
     lims = get(gca,'ylim'); 
