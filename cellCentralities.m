@@ -4,16 +4,7 @@ function cellCentralities(sessionStruct,centralitytype,ind)
 %
 
 %% Setup.
-    path = sessionStruct.Location; 
-    
-    switch centralitytype
-        case 'eigenvector'
-            load(fullfile(path,'Centralities.mat'),'eCent'); 
-            cent = eCent; 
-        case 'betweenness'
-            load(fullfile(path,'Centralities.mat'),'betCent'); 
-            cent = betCent; 
-    end
+    cent = parseCentrality(sessionStruct,centralitytype); 
     
     %Useful variables. 
     nInd = sum(ind);            %Number of neurons of interest.
