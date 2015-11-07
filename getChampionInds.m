@@ -11,9 +11,9 @@ function ind = getChampionInds(sessionStruct,celltype)
 %       'place.'
 %
 %   OUTPUT
-%       ind: Nx1 vector (N=number of nodes in giant component) ndexing the
-%       giant component of the network graph that correspond to the type of
-%       neuron specified.
+%       ind: Nx1 logical vector (N=number of nodes in giant component)
+%       ndexing the giant component of the network graph that correspond to
+%       the type of neuron specified.
 %
 
 

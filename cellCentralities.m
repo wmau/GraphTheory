@@ -22,7 +22,7 @@ function cellCentralities(sessionStruct,centralitytype,ind,celltype)
 
 %% Setup.
     cent = parseCentrality(sessionStruct,centralitytype); 
-    load(fullfile(sessionStruct.Location,'GraphRigor.mat'),'gc_nodes'); 
+    load(fullfile(sessionStruct.Location,'GraphRigor.mat'),'gc_nodes','centroids'); 
     
     %Useful variables. 
     nInd = sum(ind);            %Number of neurons of interest.
@@ -30,6 +30,14 @@ function cellCentralities(sessionStruct,centralitytype,ind,celltype)
     centStr = [upper(centralitytype(1)),centralitytype(2:end)];
     cellStr = [upper(celltype(1)),celltype(2:end)];
     B = 10000;                  %Shuffle iterations. 
+
+%% 
+    centroids = centroids(gc_nodes); 
+    scatter(centroids(ind,1),centroids(ind,2),cent(ind),...
+        'markeredgecolor','r','filled'); 
+    hold on;
+    scatter(centroids(~ind,1),centroids(ind,2),cent(ind),'filled'); 
+    hold off; 
     
 %% CDF. 
     figure;
