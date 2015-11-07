@@ -32,16 +32,13 @@ function cellCentralities(sessionStruct,centralitytype,ind,celltype)
     B = 10000;                  %Shuffle iterations. 
     area = 500;
 
-%% Highlight the champion neurons
+%% Plot the 
     centroids = centroids(gc_nodes,:); 
-    figure;
     scatter(centroids(ind,1),centroids(ind,2),area*cent(ind),'g','filled',...
         'markeredgecolor','r'); 
-        hold on;
+    hold on;
     scatter(centroids(~ind,1),centroids(~ind,2),area*cent(~ind),'g','filled'); 
-        hold off; 
-        axis tight;
-        set(gca,'visible','off'); 
+    hold off; 
     
 %% CDF. 
     figure;
