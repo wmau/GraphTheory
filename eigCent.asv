@@ -1,4 +1,4 @@
-function eigCent(sessionStruct,ind,bootstrap)
+function eCent = eigCent(A,ind,bootstrap)
 %eCent = eigCent(A,ind,bootstrap)
 %
 %   Calculates the eigenvector centrality of each node in the network and
@@ -7,7 +7,7 @@ function eigCent(sessionStruct,ind,bootstrap)
 
 %% 
     %Get eigenvector centrality of each neuron. 
-    load(fullfile(sessionStruct.Location,'Centralities.mat'),'eCent'); 
+     
     
     %Get useful variables. 
     nind = sum(ind); 

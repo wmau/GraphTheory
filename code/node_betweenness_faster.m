@@ -13,6 +13,7 @@ spaths=inf(n,n);
 adjk = adj;
 
 % calculate number of shortest paths
+p = ProgressBar(n-1);
 for k=1:n-1
   
   for i=1:n
@@ -24,9 +25,9 @@ for k=1:n-1
   end
   
   adjk=adjk*adj;
- 
+  p.progress;
 end
-
+p.stop;
 
 betw = zeros(1,n);  
 for i=1:n

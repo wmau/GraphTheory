@@ -1,4 +1,4 @@
-function [propInterestingNeuronsinComp,propNotInterestingNeuronsinComp] = strongConn(A,ind)
+function [propInterestingNeuronsinComp,propNotInterestingNeuronsinComp,s,c] = strongConn(A,ind)
 %
 %
 %

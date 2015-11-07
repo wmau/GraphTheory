@@ -1,4 +1,4 @@
-function [eCent,PCs] = eigPlaceCells(A,sessionStruct,bootstrap)
+function PCs = eigPlaceCells(A,sessionStruct,bootstrap)
 %
 %
 %
@@ -13,6 +13,6 @@ function [eCent,PCs] = eigPlaceCells(A,sessionStruct,bootstrap)
     %Get indices of place cells. 
     PCs = pval>0.95; 
     
-    eCent = eigCent(A,PCs,bootstrap);
+    eigCent(A,PCs,bootstrap);
 
 end

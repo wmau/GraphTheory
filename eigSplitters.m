@@ -1,4 +1,4 @@
-function [eCent,splitters] = eigSplitters(A,sessionStruct,bootstrap)
+function splitters = eigSplitters(A,sessionStruct,bootstrap)
 %
 %
 %
