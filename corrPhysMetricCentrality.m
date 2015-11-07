@@ -20,4 +20,5 @@ function [r,p] = corrPhysMetricCentrality(sessionStruct,centralitytype,celltype)
     scatter(cent(ind),I(ind),10); 
         lsline; 
         xlabel([centStr, ' Centrality Score']); ylabel('Spatial Information [bits/s]'); 
+        set(gca,'tickdir','out'); 
 end
