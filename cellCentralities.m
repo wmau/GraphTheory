@@ -41,12 +41,12 @@ function cellCentralities(sessionStruct,centralitytype,ind,celltype)
 
 %% Highlight the champion neurons
     centroids = centroids(gc_nodes,:); 
-    figure;
+    figure('position',[520,100,740,700]);
     subplot(2,2,1);
+        hold on;
+    scatter(centroids(~ind,1),centroids(~ind,2),area*cent(~ind),'g','filled');
     scatter(centroids(ind,1),centroids(ind,2),area*cent(ind),'g','filled',...
         'markeredgecolor','r'); 
-        hold on;
-    scatter(centroids(~ind,1),centroids(~ind,2),area*cent(~ind),'g','filled'); 
         hold off; 
         axis tight;
         set(gca,'visible','off'); 

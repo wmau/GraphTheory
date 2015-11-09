@@ -1,14 +1,8 @@
 function cent = parseCentrality(sessionStruct,centralitytype)
 %cent = parseCentrality(sessionStruct,centralitytype)
 %
-%   Extracts pre-computed centrality scores from saved mat files. Specify
-%   the type of centrality you want.
-%
-%   INPUTS
-%       sessionStruct: MD entry. 
-%
-%       centralitytype: 'eigenvector,' 'betweenness,' or 'degree.'
-%
+%   Extracts pre-computed centrality scores from saved mat files. Specify t
+%   t
 
 %% 
     path = sessionStruct.Location;
