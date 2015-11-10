@@ -1,4 +1,4 @@
-function corrEigCentSpatialInfo(sessionStruct)
+function corrCentralitySpatialInfo(sessionStruct,centralitytype)
 %
 %
 %
@@ -6,23 +6,20 @@ function corrEigCentSpatialInfo(sessionStruct)
 %% 
     path = sessionStruct.Location; 
     
-    load(fullfile(path,'GraphRigor.mat'));
-    load(fullfile(path,'SpatialInfo.mat')); 
+    cent = parseCentrality(sessionStruct,centralitytype);
     
-    eCent = eigencentrality(Aprime); 
-    
-    [r_sig,p_sig] = corr(eCent(sig),I(sig),'type','spearman'); 
-    [r_nonsig,p_nonsig] = corr(eCent(nonsig),I(nonsig),'type','spearman'); 
-    [r_all,p_all] = corr(eCent,I,'type','spearman'); 
+    [r_sig,p_sig] = corr(cent(sig),I(sig),'type','spearman'); 
+    [r_nonsig,p_nonsig] = corr(cent(nonsig),I(nonsig),'type','spearman'); 
+    [r_all,p_all] = corr(cent,I,'type','spearman'); 
     
     figure;
     hold on;
     %scatter(eCent(nonsig),I(nonsig),10,'g'); 
-    scatter(eCent(sig),I(sig),10,'b');
-        l = lsline;
+    scatter(cent(sig),I(sig),10,'b');
+        lsline;
         %set(l(1),'color','b'); set(l(2),'color','g'); 
-        title('Relationship between Eigenvector Centrality and Spatial Information'); 
-        xlabel('Eigenvector Centrality'); 
+        title('Centrality and Spatial Information Correlation'); 
+        xlabel([centstr, ' Centrality']); 
         ylabel('Spatial Information [bits/s]'); 
         set(gca,'tickdir','out');
         %legend({'Nonspatial Cells','Spatial Cells'});

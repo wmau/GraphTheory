@@ -70,6 +70,9 @@ function cellCentralities(sessionStruct,centralitytype,ind,celltype)
         set(lines(1),'color',[0.7 0.7 0.7],'linewidth',2); 
         legend({[cellStr,' Cells'],['Non-',cellStr,' Cells']},'location','southeast');
         
+    [~,p] = kstest2(cent(ind),cent(~ind));
+    disp(['KS Test p=',num2str(p)]);
+        
 %% Histogram.
     [~,edges] = histcounts(cent(ind),15); 
     chmpCount = histc(cent(ind),edges)/nInd; 

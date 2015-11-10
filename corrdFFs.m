@@ -21,7 +21,11 @@ function [r,p,dFF,raw] = corrdFFs(sessionStruct)
     %Load the variables.
     cd(sessionStruct.Location); 
     load('Dumbtraces.mat','Rawtrace'); 
-    load('Pos_align.mat','FT'); 
+    try
+        load('Pos_align.mat','FT'); 
+    catch
+        load('PlaceMaps.mat','FT'); 
+    end
     
     %Align trace. 
     Pix2CM = 0.15; 
