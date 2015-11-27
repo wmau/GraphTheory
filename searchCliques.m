@@ -1,5 +1,5 @@
 function [cliques,randCliques] = searchCliques(A,ind)
-%
+%[cliques,randCliques] = searchCliques(A,ind)
 %
 %
 
@@ -49,7 +49,7 @@ function [cliques,randCliques] = searchCliques(A,ind)
     randmeans = nanmean(randCliques); 
     
     figure;
-    histogram(randmeans); 
+    histogram(randmeans,'facecolor','k'); 
     lims = get(gca,'ylim'); 
     line([meanCliqueProp,meanCliqueProp],lims,'color','r','linewidth',2);
         xlabel('Clique Co-membership'); ylabel('Count'); 
