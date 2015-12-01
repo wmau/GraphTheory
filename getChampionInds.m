@@ -20,7 +20,7 @@ function ind = getChampionInds(sessionStruct,celltype)
 %% Parse the cell type. 
     path = sessionStruct.Location;
     
-    load(fullfile(path,'GraphRigor.mat'),'gc_nodes'); 
+    load(fullfile(path,'Graph.mat'),'gc_nodes'); 
     switch celltype
         case 'splitter'
             load(fullfile(path,'sigSplitters.mat'),'sigcurve');

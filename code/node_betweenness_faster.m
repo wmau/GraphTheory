@@ -13,6 +13,7 @@ spaths=inf(n,n);
 adjk = adj;
 
 % calculate number of shortest paths
+disp('Calculating number of shortest paths...');
 p = ProgressBar(n-1);
 for k=1:n-1
   
@@ -30,6 +31,8 @@ end
 p.stop;
 
 betw = zeros(1,n);  
+disp('Calculating centralities...');
+p = ProgressBar(n);
 for i=1:n
     [dist,P]=dijkstra(adj,i,[]);
     for j=1:n
@@ -38,6 +41,8 @@ for i=1:n
         betw(P{j}(2:dist(j))) = betw(P{j}(2:dist(j))) + 1/spaths(i,j);
         
     end
+    p.progress;
 end
+p.stop;
 
 betw=betw/nchoosek(n,2);   % further normalize by the number of all node pairs

@@ -10,6 +10,11 @@ n=size(adj,1);
 
 dij = [];
 
-for i=1:n; dij=[dij; simple_dijkstra(adj,i) ]; end
+p = ProgressBar(n);
+for i=1:n
+    dij=[dij; simple_dijkstra(adj,i) ];
+    p.progress;
+end
+p.stop;
 
 l = sum(sum(dij))/(n^2-n); % sum and average across everything but the diagonal

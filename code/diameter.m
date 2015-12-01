@@ -7,7 +7,12 @@
 function diam = diameter(adj)
 
 diam=0;
+p = ProgressBar(size(adj,1));
 for i=1:size(adj,1)
     d=simple_dijkstra(adj,i);
     diam = max([max(d),diam]);
+    p.progress;
+end
+p.stop;
+
 end

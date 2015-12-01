@@ -1,4 +1,4 @@
-function [A,R,d,p,centroids,dFF] = MakeGraph(sessionStruct,downsample,plot,mcmode)
+function [A,R,d,p,centroids,dFF] = MakeGraph(sessionStruct,downsample,plot,mcmode,savegraph,jitter)
 %[A,R,d,p,centroids,dFF] = MakeGraph(sessionStruct,downsample,plot,mcmode)
 %
 %   Make a graph with neurons as nodes where edges are defined by the top
@@ -133,8 +133,20 @@ function [A,R,d,p,centroids,dFF] = MakeGraph(sessionStruct,downsample,plot,mcmod
     
     R(isnan(R)) = 0; 
     
+    %Toss highly correlated neurons that are correlated because of high
+    %firing rate. 
+    if jitter
+        [Aprime,propFailed] = jittercheck(A,R,FT);
+    end
+    
+    if jitter
+        [GC,gc_nodes] = giant_component(Aprime);
+    else
+        [GC,gc_nodes] = giant_component(A);
+    end
+    
     if savegraph
-        save('Graph.mat','A','R','p','centroids','dFF'); 
+        save('Graph.mat','A','Aprime','R','p','centroids','dFF','propFailed','GC','gc_nodes'); 
     end
    
 end

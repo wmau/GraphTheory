@@ -1,5 +1,5 @@
 function plotNetwork(A,R,centroids)
-%
+%plotNetwork(A,R,centroids)
 %
 %
 

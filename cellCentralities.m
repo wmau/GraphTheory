@@ -11,7 +11,7 @@ function cellCentralities(sessionStruct,centralitytype,ind,celltype)
 %   INPUTS
 %       sessionStruct: MD entry. 
 %
-%       centralitytype: 'eigenvector' or 'betweenness'.
+%       centralitytype: 'eigenvector,' 'betweenness,' or 'degree'.
 %
 %       ind: Index of the neurons of interest. Use getChampionInds.m. 
 %
@@ -22,11 +22,11 @@ function cellCentralities(sessionStruct,centralitytype,ind,celltype)
 
 %% Setup.
     cent = parseCentrality(sessionStruct,centralitytype); 
-    load(fullfile(sessionStruct.Location,'GraphRigor.mat'),'gc_nodes','centroids'); 
+    load(fullfile(sessionStruct.Location,'Graph.mat'),'gc_nodes','centroids'); 
     
     %Useful variables. 
     nInd = sum(ind);            %Number of neurons of interest.
-    pool = length(ind);         %Pool form which you're sampling. 
+    pool = length(ind);         %Pool from which you're sampling. 
     centStr = [upper(centralitytype(1)),centralitytype(2:end)];
     cellStr = [upper(celltype(1)),celltype(2:end)];
     B = 10000;                  %Shuffle iterations. 
@@ -70,8 +70,9 @@ function cellCentralities(sessionStruct,centralitytype,ind,celltype)
         set(lines(1),'color',[0.7 0.7 0.7],'linewidth',2); 
         legend({[cellStr,' Cells'],['Non-',cellStr,' Cells']},'location','southeast');
         
-    [~,p] = kstest2(cent(ind),cent(~ind));
+    [~,p,D] = kstest2(cent(ind),cent(~ind));
     disp(['KS Test p=',num2str(p)]);
+    disp(['D = ',num2str(D)]);
         
 %% Histogram.
     [~,edges] = histcounts(cent(ind),15); 
