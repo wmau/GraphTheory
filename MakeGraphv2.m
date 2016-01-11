@@ -25,11 +25,11 @@ function A = MakeGraphv2(sessionStruct)
 %% Setup.
     %Useful variables. 
     [nNeurons,nFrames] = size(FT);
-    dt = 0.05;                  %seconds.
-    window = 0.8;               %seconds.
+    dt = 0.05;                          %seconds.
+    window = 10;                        %seconds.
     nBins = window/dt;          
     [onset,~] = getFEpochs(FT);         %Get onset indices for calcium events. 
-    null = randi([-16,16],1,100000);    %Null distribution for comparing empirical lags. 
+    null = randi([-nBins,nBins],1,100000);    %Null distribution for comparing empirical lags. 
     A = zeros(nNeurons); 
 
 %% Construct the graph. 
@@ -91,4 +91,5 @@ function A = MakeGraphv2(sessionStruct)
     end
     p.stop;
     
+    save('Graph.mat','A');
 end

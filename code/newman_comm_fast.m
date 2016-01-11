@@ -22,6 +22,7 @@ end
 
 Q(1) = Qfn(groups,adj);
 
+p=ProgressBar(n-1);
 for s=1:n-1 % all possible iterations
   
   % print all groups
@@ -33,6 +34,7 @@ for s=1:n-1 % all possible iterations
   
   dQ=zeros(length(groups));
 
+  
   for i=1:length(groups)
     for j=i+1:length(groups)
       group_i=groups{i};
@@ -46,12 +48,13 @@ for s=1:n-1 % all possible iterations
 	connected=1;
       end
       
-      if connected & not(isempty(group_i)) & not(isempty(group_j))
+      if connected && not(isempty(group_i)) && not(isempty(group_j))
 	% join groups i and j?
 	dQ(i,j)=deltaQ(groups,adj,i,j);
       end
       
     end
+    
   end
   
   
@@ -67,7 +70,9 @@ for s=1:n-1 % all possible iterations
   groups_hist{length(groups_hist)+1}=groups; % save current snapshot
   Q(length(Q)+1) = Qfn(groups,adj);
   
+  p.progress;
 end % end of all iterations
+p.stop;
 
 num_modules=[];
 for g=1:length(groups_hist)
