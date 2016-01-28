@@ -28,7 +28,7 @@ function [VV,clusters] = communityCluster(animal,date,session,A,method)
     nClusters = length(clusters);               %Number of clusters. 
     
     %Neuron centroids.
-    centroids = getNeuronCentroids(animal,date,session);
+    centroids = getNeuronCentroids(animal,date,session,3);
 
     %Null distribution of centroid distances, using all the neurons. 
     null = pdist(centroids,'euclidean');
@@ -48,7 +48,7 @@ function [VV,clusters] = communityCluster(animal,date,session,A,method)
     
     %Edge list. 
     el = getEdges(A,'adj');
-    nEdges = numedges(A);
+    nEdges = length(el);
     
     %Plot the edges.
     subplot(1,2,1);
@@ -96,7 +96,6 @@ function [VV,clusters] = communityCluster(animal,date,session,A,method)
     subplot(1,2,2);
     ecdf(null); ecdf(null2); 
     h = get(gca,'children');
-    set(h(1),'linewidth',3);
-    set(h(2),'linewidth',3,'linestyle',':');
+    set(h(1:2),'linewidth',3);
     
 end
