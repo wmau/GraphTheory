@@ -2,7 +2,7 @@ function A = MakeGraphv2(sessionStruct)
 %A = MakeGraphv2(sessionStruct)
 %
 %   This is a different method network inference. Here, I use a similar
-%   algorithm as Bonifazi et al., 2009, where we look at temporal lags
+%   algorithm as Bonifavi et al., 2009, where we look at temporal lags
 %   between neuron responses. Going cell by cell, define windows around
 %   its calcium events and look for other neurons that are active during
 %   this window. Then look at the distribution of lags of these responses
@@ -49,7 +49,7 @@ function A = MakeGraphv2(sessionStruct)
         %Preallocate. Reset for every neuron. Each cell entry represents
         %the lag at which another neuron was coincident within dt seconds. 
         corrDists = cell(nNeurons,1); 
-        corrDists{n} = nan;
+        corrDists{n} = nan; 
         
         %For each calcium event...
         for e=1:nEpochs
