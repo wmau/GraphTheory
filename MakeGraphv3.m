@@ -5,6 +5,7 @@ function MakeGraphv3(md)
 
 %% Load traces and align to imaging. 
     path = md.Location;
+    cd(path);
     try 
         load(fullfile(path,'Pos_align.mat'),'FT','aviFrame'); 
     catch
@@ -94,7 +95,7 @@ function MakeGraphv3(md)
     %Perform pairwise comparisons between lag distributions for each neuron
     %(in both directions). Convention: row connects to colum, so nn should
     %fire first and lag between nn and cc should be negative. 
-    alpha = 0.05/nNeurons;
+    alpha = 0.05/(nNeurons-1);
     p = ProgressBar(nNeurons);
     for nn=1:nNeurons
         for cc=1:nNeurons
@@ -111,5 +112,11 @@ function MakeGraphv3(md)
     end
     p.stop;
     
-    keyboard;
+    graphData.A = A; 
+    graphData.Ap = Ap; 
+    graphData.null =    cellfun(@(x) x./20, null,'unif',0);
+    graphData.lagMat =  cellfun(@(x) x./20, lagMat,'unif',0); 
+    
+    save('Graph.mat','graphData','-v7.3');
+    
 end
