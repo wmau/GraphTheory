@@ -64,7 +64,7 @@ function MakeGraphv3(md)
                 for c=coincidentNeurons'
                     %Find the interval between neuron n and neuron c.
                     lags = b+nBins-onset{c};
-                    lagMat{n,c} = [lagMat{n,c}, lags(lags<nBins & lags>-nBins)./20];
+                    lagMat{n,c} = [lagMat{n,c}, lags(lags<nBins & lags>-nBins)];
                     
                     for nn=1:B
                         %Shuffle traces of neuron c in time then find
@@ -82,7 +82,7 @@ function MakeGraphv3(md)
                         %Lag between neuron n spike and neuron c spike
                         %(shuffled).
                         nullLag = b+nBins-shuffledOnset;
-                        null{n,c} = [null{n,c}, nullLag(nullLag<nBins & nullLag>-nBins)./20];
+                        null{n,c} = [null{n,c}, nullLag(nullLag<nBins & nullLag>-nBins)];
                     end
                    
                 end
@@ -99,10 +99,10 @@ function MakeGraphv3(md)
     p = ProgressBar(nNeurons);
     for nn=1:nNeurons
         for cc=1:nNeurons
-            [~,e,b] = histcounts(lagMat{nn,cc},'binwidth',0.5);
+            
             if ~isempty(lagMat{nn,cc}) && ...
                     length(lagMat{nn,cc}) > 3 && ...
-                    e(mode(b)) < 0
+                    mean(lagMat{nn,cc}) < 0
                 [h,pval] = kstest2(lagMat{nn,cc},null{nn,cc},'alpha',alpha);
                 
                 Ap(nn,cc) = pval; 
@@ -115,8 +115,8 @@ function MakeGraphv3(md)
     
     graphData.A = A; 
     graphData.Ap = Ap; 
-    graphData.null = null;
-    graphData.lagMat = lagMat;
+    graphData.null =    cellfun(@(x) x./20, null,'unif',0);
+    graphData.lagMat =  cellfun(@(x) x./20, lagMat,'unif',0); 
     
     save('Graph.mat','graphData','-v7.3');
     
