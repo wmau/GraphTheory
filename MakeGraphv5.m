@@ -8,7 +8,7 @@ function MakeGraphv5(md)
     
     load('TimeCells.mat','T','TodayTreadmillLog'); 
     load('Pos_align.mat','FT');
-    load('ProcOut.mat','NumNeurons');
+    NumNeurons = size(FT,1);
     complete = TodayTreadmillLog.complete;
     inds = TodayTreadmillLog.inds; 
     
@@ -16,6 +16,7 @@ function MakeGraphv5(md)
     inds = inds(find(complete),:);  %Only completed runs. 
     inds(:,2) = inds(:,1) + 20*T-1; %Consistent length.   
     nLaps = sum(complete); 
+    critLaps = 0.25*nLaps;
     
     %Build raster for each cell. 
     rasters = cell(1,NumNeurons);
@@ -23,8 +24,9 @@ function MakeGraphv5(md)
         rasters{i} = buildRaster(inds,FT,i);
     end
         
-    %Only look at active neurons. 
-    active = find(cellfun(@(x) any(x(:)), rasters));
+    %Only look at neurons active on the treadmill for more than critLaps.    
+    nLapsActive = cell2mat(cellfun(@(x) sum(any(x,2)), rasters, 'unif', 0)); 
+    active = find(nLapsActive > critLaps); 
     
     closest = cell(NumNeurons);
     CC = cell(NumNeurons);
@@ -44,7 +46,7 @@ function MakeGraphv5(md)
                 %Only look at laps where both neurons were active. 
                 bothActiveLaps = find(any(immediateRaster,2)); 
                 TMalignedOnsets = [];
-                for l=bothActiveLaps
+                for l=bothActiveLaps'
                     %Get the onset times of each neuron. 
                     TMalignedOnsets = [TMalignedOnsets find(rasters{two}(l,:))];     
                 end
@@ -59,10 +61,9 @@ function MakeGraphv5(md)
                 ratio(one,two) = intervalSpread(one,two) / treadmillSpread;
                 
                 null = zeros(1,B); 
-                parfor i=1:B
+                for i=1:B
                     shuffled = rasters{one}(randperm(nLaps),:);
                     [~,dB] = stripRaster(shuffled,rasters{two});
-                    dB = dB./20;
                     dBSpread = mad(dB,1);
                     null(i) = dBSpread./treadmillSpread;        
                 end
