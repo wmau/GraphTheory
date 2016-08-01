@@ -25,20 +25,19 @@ function graphData = MakeGraphv4(md)
     nNeurons = size(FT,1);
     Ap = nan(nNeurons); 
     A = false(nNeurons);
-   
     
-%% Construct vectors of closest cell firing.
+%% Construct vectors.
     %Preallocate.
     CC = cell(nNeurons); 
     closest = cell(nNeurons);
     null = cell(nNeurons);
     raster = cell(1,nNeurons);
-    lapsActive = cell(1,nNeurons);
+    %lapsActive = cell(1,nNeurons);
     critLaps = 0.25*nLaps;
     
-    dt = 0.05;              %Bin size, seconds. 
-    window = 10;            %Window of interest, seconds. 
-    nBins = window/dt; 
+    %dt = 0.05;              %Bin size, seconds. 
+    %window = 10;            %Window of interest, seconds. 
+    %nBins = window/dt; 
     
     %Build all the rasters.
     for n=1:nNeurons
