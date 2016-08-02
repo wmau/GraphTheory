@@ -18,7 +18,7 @@ function G = MakeGraph_alt(md)
     
     %Trim indices. 
     inds = TodayTreadmillLog.inds;
-    inds=  inds(find(TodayTreadmillLog.complete),:);
+    inds = inds(find(TodayTreadmillLog.complete),:);
     inds(:,2) = inds(:,1) + 20*T-1; 
     
     nNeurons = size(FT,1);      %Number of neurons. 
@@ -57,7 +57,7 @@ function G = MakeGraph_alt(md)
     closest{1} = cell(nNeurons); closest{2} = cell(nNeurons); 
     CC{1} = cell(nNeurons); CC{2} = cell(nNeurons); 
     Ap{1} = nan(nNeurons); Ap{2} = nan(nNeurons); 
-    null{1} = cell(nNeurons); null{2} = cell(nNeurons);
+    nulld{1} = cell(nNeurons); nulld{2} = cell(nNeurons);
     A{1} = false(nNeurons); A{2} = false(nNeurons);
     for alt=1:2
         disp(['Analyzing ',LRstring{alt},' trials...']);
@@ -73,7 +73,7 @@ function G = MakeGraph_alt(md)
                     nLapsBothActive{alt}(trigger,target) = sum(any(immRaster,2)); 
 
                     if nLapsBothActive{alt}(trigger,target) > critLaps(alt);
-                        [CC{alt}{trigger,target},Ap{alt}(trigger,target),null{alt}{trigger,target}] = ...
+                        [CC{alt}{trigger,target},Ap{alt}(trigger,target),nulld{alt}{trigger,target}] = ...
                             lapCC(raster{trigger}(LR{alt},:),raster{target}(LR{alt},:),500); 
                     end
                 end
@@ -97,6 +97,6 @@ function G = MakeGraph_alt(md)
     mdInfo.Date = md.Date;
     mdInfo.Session = md.Session;
     
-    save('GraphAlt.mat','A','Ap','CC','null','closest','mdInfo','-v7.3');
+    save('GraphAlt.mat','A','Ap','CC','nulld','closest','mdInfo','-v7.3');
           
 end

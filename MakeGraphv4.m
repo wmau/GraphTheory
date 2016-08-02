@@ -30,7 +30,7 @@ function graphData = MakeGraphv4(md)
     %Preallocate.
     CC = cell(nNeurons); 
     closest = cell(nNeurons);
-    null = cell(nNeurons);
+    nulld = cell(nNeurons);
     raster = cell(1,nNeurons);
     %lapsActive = cell(1,nNeurons);
     critLaps = 0.25*nLaps;
@@ -67,7 +67,7 @@ function graphData = MakeGraphv4(md)
                 %relative to neuron two plus the p-value and null
                 %distributions associated with shuffling B times.    
                 if nLapsBothActive(one,two) > critLaps
-                    [CC{one,two},Ap(one,two),null{one,two}] = lapCC(raster{one},raster{two},500);    
+                    [CC{one,two},Ap(one,two),nulld{one,two}] = lapCC(raster{one},raster{two},500);    
                 end
             end     
         end 
@@ -90,7 +90,7 @@ function graphData = MakeGraphv4(md)
     graphData.A = A; 
     graphData.Ap = Ap; 
     graphData.lagMat = CC;
-    graphData.null = null;
+    graphData.nulld = nulld;
     graphData.closest = closest;
     graphData.Animal = md.Animal;
     graphData.Date = md.Date;
