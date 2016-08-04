@@ -77,7 +77,7 @@ function graphData_KS = KSpruneA(md,graphData)
     mdInfo.Animal = graphData.Animal;
     mdInfo.Date = graphData.Date;
     mdInfo.Session = graphData.Session;
-    null = graphData.null;
+    nulld = graphData.nulld;
     CC = graphData.lagMat; 
     
     save('graphData_KS.mat','graphData_KS','A','p','mdInfo','null','CC','-v7.3');
