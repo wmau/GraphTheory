@@ -79,9 +79,7 @@ function graphData = MakeGraphv4(md)
         %FDR.
         if ~isempty(pvals)
             [~,pcrit] = fdr_bh(pvals,0.05);
-            m = cellfun(@median,CC(:,two));
-            A(:,two) = Ap(:,two) < pcrit ...
-                & m < 0;
+            A(:,two) = Ap(:,two) < pcrit;
         end       
         p.progress;
     end
@@ -89,12 +87,15 @@ function graphData = MakeGraphv4(md)
     
     graphData.A = A; 
     graphData.Ap = Ap; 
-    graphData.lagMat = CC;
+    graphData.CC = CC;
     graphData.nulld = nulld;
     graphData.closest = closest;
     graphData.Animal = md.Animal;
     graphData.Date = md.Date;
     graphData.Session = md.Session;
+    mdInfo.Animal = md.Animal; 
+    mdInfo.Date = md.Date;
+    mdInfo.Session = md.Session;
     
-    save('Graphv4.mat','graphData','-v7.3');
+    save('Graphv4.mat','graphData','A','Ap','CC','nulld','closest','mdInfo','-v7.3');
 end

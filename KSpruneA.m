@@ -46,14 +46,18 @@ function graphData_KS = KSpruneA(md,graphData)
             [immRaster,TTLatencies] = stripRaster(trigRaster,targRaster);
             
             %From those, find the treadmill-target latencies.
-            TMAlignedOnsets = TMLatencies(immRaster,targRaster);
+            TMAlignedOnsets = TMLatencies(immRaster,targRaster)';
             
             %Normalize
-            TTLatencies = TTLatencies./min(TTLatencies); 
-            TMAlignedOnsets = TMAlignedOnsets./max(TMAlignedOnsets); 
-            
-            %KS-test. 
-            [~,graphData_KS.p(e,n)] = kstest2(TTLatencies,TMAlignedOnsets);
+            if all(TTLatencies==0) || all(TMAlignedOnsets==0)
+                continue;
+            else
+                TTLatencies = TTLatencies./min(TTLatencies); 
+                TMAlignedOnsets = TMAlignedOnsets./max(TMAlignedOnsets); 
+
+                %KS-test. 
+                [~,graphData_KS.p(e,n)] = kstest2(TTLatencies,TMAlignedOnsets);
+            end
         end
         
         if any(graphData_KS.p(:,n));
@@ -78,7 +82,7 @@ function graphData_KS = KSpruneA(md,graphData)
     mdInfo.Date = graphData.Date;
     mdInfo.Session = graphData.Session;
     nulld = graphData.nulld;
-    CC = graphData.lagMat; 
+    CC = graphData.CC; 
     
-    save('graphData_KS.mat','graphData_KS','A','p','mdInfo','null','CC','-v7.3');
+    save('graphData_KS.mat','graphData_KS','A','p','mdInfo','nulld','CC','-v7.3');
 end
