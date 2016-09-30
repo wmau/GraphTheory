@@ -9,15 +9,15 @@ function graphData = MakeGraphv4(md)
     load('TimeCells.mat','TodayTreadmillLog','T');
    
     try 
-        load('Pos_align.mat','FT','aviFrame'); 
+        load('Pos_align.mat','FT'); 
     catch
         load('FinalOutput.mat','FT');
-        [~,~,~,FT,~,~,aviFrame] = AlignImagingToTracking(md.Pix2CM,FT,0); 
+        [~,~,~,FT] = AlignImagingToTracking(md.Pix2CM,FT,0); 
     end
     
     inds = TodayTreadmillLog.inds;
     inds = inds(find(TodayTreadmillLog.complete),:);        %Only completed runs. 
-    nLaps = sum(TodayTreadmillLog.complete); 
+    nRuns = sum(TodayTreadmillLog.complete); 
 
     inds(:,2) = inds(:,1) + 20*T-1;                         %Consistent length.
         
@@ -33,7 +33,7 @@ function graphData = MakeGraphv4(md)
     nulld = cell(nNeurons);
     raster = cell(1,nNeurons);
     %lapsActive = cell(1,nNeurons);
-    critLaps = 0.25*nLaps;
+    critLaps = 0.25*nRuns;
     
     %dt = 0.05;              %Bin size, seconds. 
     %window = 10;            %Window of interest, seconds. 

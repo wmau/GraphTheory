@@ -23,7 +23,6 @@ function graphData_KS = KSpruneA(md,graphData)
     
     graphData_KS = graphData; 
     nNeurons = size(graphData_KS.A,1); 
-    graphData_KS.A = false(nNeurons); 
     graphData_KS.p = nan(nNeurons); 
   
     load(fullfile(md.Location,'Pos_align.mat'),'FT');
@@ -45,17 +44,25 @@ function graphData_KS = KSpruneA(md,graphData)
             %Get raster for the trigger cells.
             trigRaster = buildRaster(inds,FT,e);
             [immRaster,TTLatencies] = stripRaster(trigRaster,targRaster);
+            TTLatencies = -TTLatencies;
             
             %From those, find the treadmill-target latencies.
             TMAlignedOnsets = TMLatencies(immRaster,targRaster)';
+            
+            if n==42 && e==43
+                keyboard;
+            end
             
             %Normalize
             if all(TTLatencies==0) || all(TMAlignedOnsets==0)
                 continue;
             else
-                TTLatencies = TTLatencies./min(TTLatencies); 
-                TMAlignedOnsets = TMAlignedOnsets./max(TMAlignedOnsets); 
+                TTLatencies = TTLatencies - max(TTLatencies);  
+                TTLatencies = TTLatencies ./ min(TTLatencies); 
 
+                TMAlignedOnsets = TMAlignedOnsets - max(TMAlignedOnsets);
+                TMAlignedOnsets = TMAlignedOnsets ./ min(TMAlignedOnsets); 
+                
                 %KS-test. 
                 [~,graphData_KS.p(e,n)] = kstest2(TTLatencies,TMAlignedOnsets);
             end
