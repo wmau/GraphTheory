@@ -56,7 +56,7 @@ function graphData = MakeGraphv4(md)
     %For each neuron...
     p = ProgressBar(length(active));
     for two=active
-        parfor one=active         
+        for one=active         
             if one ~= two %&& nLapsBothActive > critLaps
                 %Get the closest spikes of neuron one relative to neuron
                 %two.  
