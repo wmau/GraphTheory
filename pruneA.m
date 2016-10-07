@@ -7,14 +7,15 @@ function graphData_p = pruneA(graphData)
     graphData_p = graphData;
     nNeurons = size(graphData_p.A,1);
     graphData_p.prune_p = nan(nNeurons); 
-    p = ProgressBar(nNeurons);
-    
+    graphData_p.trialShuffleNulls = cell(nNeurons);
     pcrit = 0.01;
+    
+    p = ProgressBar(nNeurons);
     for n=1:nNeurons
         el = find(graphData.A(:,n))';
         
         if ~isempty(el)
-            [pvals,el] = trialShuffleKSTest(graphData_p,n);
+            [pvals,el,trialShuffleNulls] = trialShuffleKSTest(graphData_p,n);
 %             pvals_corrected = pvals(pvals~=1); 
 % 
 %             if ~isempty(pvals_corrected)
@@ -27,6 +28,10 @@ function graphData_p = pruneA(graphData)
             graphData_p.A(el(pvals>pcrit),n) = false; 
 
             graphData_p.prune_p(el,n) = pvals'; 
+            
+            for e=1:length(el)
+                graphData_p.trialShuffleNulls{el(e),n} = trialShuffleNulls{e};
+            end
         end
         
         p.progress;
