@@ -1,5 +1,5 @@
 function graphData = MakeGraphv4(md)
-%
+%graphData = MakeGraphv4(md)
 %
 %
 
@@ -50,25 +50,22 @@ function graphData = MakeGraphv4(md)
     nLapsActive = cell2mat(cellfun(@(x) sum(any(x,2)), raster, 'unif',0));
     active = find(nLapsActive > critLaps);
     
-    nLapsBothActive = zeros(nNeurons);
+    %nLapsBothActive = zeros(nNeurons);
     
 %% Construct pairwise spike differences. 
     %For each neuron...
     p = ProgressBar(length(active));
-    for two=active
-        pfor one=active         
+    parfor two=active
+        for one=active         
             if one ~= two %&& nLapsBothActive > critLaps
                 %Get the closest spikes of neuron one relative to neuron
                 %two.  
                 [i,closest{one,two}] = stripRaster(raster{one},raster{two});
-
-                %Number of laps where neuron 1 preceded neuron 2. 
-                nLapsBothActive(one,two) = sum(any(i,2));
                 
                 %Get the temporal distances between spikes of neuron one
                 %relative to neuron two plus the p-value and null
                 %distributions associated with shuffling B times.    
-                if nLapsBothActive(one,two) > critLaps
+                if sum(any(i,2)) > critLaps
                     [CC{one,two},Ap(one,two),nulld{one,two}] = lapCC(raster{one},raster{two},500);    
                 end
             end     

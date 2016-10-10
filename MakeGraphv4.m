@@ -1,5 +1,5 @@
 function graphData = MakeGraphv4(md)
-%
+%graphData = MakeGraphv4(md)
 %
 %
 
