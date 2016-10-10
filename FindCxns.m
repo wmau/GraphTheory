@@ -62,8 +62,8 @@ function FindCxns(md)
                 %P-value.
                 [~,Apval(c)] = kstest2(nullLats{c},latencies{c});
             end
-            
-            
+        else 
+            Apval(c) = nan;    
         end
         
         if round(c/updateInc) == (c/updateInc)
