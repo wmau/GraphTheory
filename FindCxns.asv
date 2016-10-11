@@ -52,31 +52,26 @@ function graphData = FindCxns(md)
     nComparisons = nNeurons*nNeurons;
     
 %% Construct pairwise spike latencies. 
-    %Build progress bar.
+    %Build progress ba
     resolution = 2;
     updateInc = round(nComparisons/(100/resolution));
     p = ProgressBar(100/resolution);
-    
-    %Perform comparisons.
     parfor c=1:nComparisons
-        %Get row,column indices.
         [src,snk] = ind2sub([nNeurons,nNeurons],c);
         
-        %Omit comparisons between same neuron. Only look at active neurons.
         if src~=snk && ismember(src,active) && ismember(snk,active)
-            %Get empirical latency distribution.
             latencies{c} = sjlLatFinder(rasters{src},rasters{snk});
             
-            %Permute time then find latency distribution again.            
+            tempsrc = rasters{src};
+            
             if ~isempty(latencies{c})
-                tempsrc = rasters{src};
                 tempnull = cell(1,B);
                 for i=1:B
                     tempsrc = permuteTime(tempsrc);
                     tempnull{i} = sjlLatFinder(tempsrc,rasters{snk});                    
                 end
                 
-                %Concatenate null latency distributions.
+                %Concatenate. 
                 nullLats{c} = cell2mat(tempnull);
                 
                 %P-value.
@@ -86,16 +81,13 @@ function graphData = FindCxns(md)
             Apval(c) = nan;    
         end
         
-        %Update progress bar. 
         if round(c/updateInc) == (c/updateInc)
             p.progress;
         end
     end
     p.stop;
     
-%% Build adjacency matrix.
     for n=1:nNeurons
-        %Get p-values and excise bad ones.
         pvals = Apval(:,n);
         pvals(isnan(pvals)) = [];
         pvals(pvals==1) = [];
@@ -107,7 +99,6 @@ function graphData = FindCxns(md)
         end    
     end
     
-%% Construct structs.
     graphData.A = A;
     graphData.Apval = Apval;
     graphData.latencies = latencies; 
@@ -120,8 +111,7 @@ function graphData = FindCxns(md)
     mdInfo.Session = md.Session;
     
     elapsed = toc;
-
-%% Save. 
+    
     save('Cxns.mat','graphData','A','Apval','latencies','nullLats',...
         'mdInfo','elapsed','-v7.3');
 end
