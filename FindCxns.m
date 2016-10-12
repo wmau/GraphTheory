@@ -39,7 +39,7 @@ function graphData = FindCxns(md)
     tNullLats = cell(nNeurons);
     rasters = cell(1,nNeurons); 
     critLaps = .25 * nRuns; 
-    B = 500;
+    B = 100;
     
     %Builds all the onset rasters. 
     for n=1:nNeurons
@@ -58,7 +58,7 @@ function graphData = FindCxns(md)
     p = ProgressBar(100/resolution);
     
     %Perform comparisons.
-    parpool(16);
+    parpool(4);
     parfor c=1:nComparisons
         %Get row,column indices.
         [src,snk] = ind2sub([nNeurons,nNeurons],c);
@@ -126,6 +126,6 @@ function graphData = FindCxns(md)
     elapsed = toc;
 
 %% Save. 
-    save('Cxns.mat','graphData','A','Atpval','latencies','tNullLats',...
+    save('CxnsTEST.mat','graphData','A','Atpval','latencies','tNullLats',...
         'mdInfo','elapsed','-v7.3');
 end
