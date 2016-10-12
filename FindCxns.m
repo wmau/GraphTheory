@@ -39,7 +39,7 @@ function graphData = FindCxns(md)
     tNullLats = cell(nNeurons);
     rasters = cell(1,nNeurons); 
     critLaps = .25 * nRuns; 
-    B = 100;
+    B = 500;
     
     %Builds all the onset rasters. 
     for n=1:nNeurons
