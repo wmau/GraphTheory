@@ -59,7 +59,7 @@ function graphData = FindCxns(md)
     
     %Perform comparisons.
     parpool('local');
-    for c=1:nComparisons
+    parfor c=1:nComparisons
         %Get row,column indices.
         [src,snk] = ind2sub([nNeurons,nNeurons],c);
         
@@ -72,9 +72,9 @@ function graphData = FindCxns(md)
             if ~isempty(latencies{c})
                 tempsrc = rasters{src};
                 tempnull = cell(1,B);
-                
-                parfor i=1:B
-                    tempnull{i} = sjlLatFinder(permuteTime(tempsrc),rasters{snk});                    
+                for i=1:B
+                    tempsrc = permuteTime(tempsrc);
+                    tempnull{i} = sjlLatFinder(tempsrc,rasters{snk});                    
                 end
                 
                 %Concatenate null latency distributions.
