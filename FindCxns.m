@@ -33,10 +33,10 @@ function graphData = FindCxns(md)
     nNeurons = size(FT,1); 
     
     %Preallocate. 
-    Apval = nan(nNeurons); 
+    Atpval = nan(nNeurons); 
     A = false(nNeurons); 
     latencies = cell(nNeurons); 
-    nullLats = cell(nNeurons);
+    tNullLats = cell(nNeurons);
     rasters = cell(1,nNeurons); 
     critLaps = .25 * nRuns; 
     B = 500;
@@ -77,13 +77,15 @@ function graphData = FindCxns(md)
                 end
                 
                 %Concatenate null latency distributions.
-                nullLats{c} = cell2mat(tempnull);
+                tNullLats{c} = cell2mat(tempnull);
                 
                 %P-value.
-                [~,Apval(c)] = kstest2(nullLats{c},latencies{c});
+                [~,Atpval(c)] = kstest2(tNullLats{c},latencies{c});
+            else 
+                Atpval(c) = nan;
             end
         else 
-            Apval(c) = nan;    
+            Atpval(c) = nan;    
         end
         
         %Update progress bar. 
@@ -96,22 +98,22 @@ function graphData = FindCxns(md)
 %% Build adjacency matrix.
     for n=1:nNeurons
         %Get p-values and excise bad ones.
-        pvals = Apval(:,n);
+        pvals = Atpval(:,n);
         pvals(isnan(pvals)) = [];
         pvals(pvals==1) = [];
         
         %FDR.
         if ~isempty(pvals)
             [~,pcrit] = fdr_bh(pvals,0.05);
-            A(:,n) = Apval(:,n) < pcrit;
+            A(:,n) = Atpval(:,n) < pcrit;
         end    
     end
     
 %% Construct structs.
     graphData.A = A;
-    graphData.Apval = Apval;
+    graphData.Atpval = Atpval;
     graphData.latencies = latencies; 
-    graphData.nullLats = nullLats;
+    graphData.tNullLats = tNullLats;
     graphData.Animal = md.Animal;
     graphData.Date = md.Date;
     graphData.Session = md.Session;
@@ -122,6 +124,6 @@ function graphData = FindCxns(md)
     elapsed = toc;
 
 %% Save. 
-    save('Cxns.mat','graphData','A','Apval','latencies','nullLats',...
+    save('Cxns.mat','graphData','A','Atpval','latencies','tNullLats',...
         'mdInfo','elapsed','-v7.3');
 end
