@@ -69,7 +69,7 @@ function graphData = FindCxns(md)
             latencies{c} = sjlLatFinder(rasters{src},rasters{snk});
             
             %Permute time then find latency distribution again.            
-            if ~isempty(latencies{c})
+            if length(latencies{c}) >= critLaps
                 tempsrc = rasters{src};
                 tempnull = cell(1,B);
                 
@@ -80,8 +80,12 @@ function graphData = FindCxns(md)
                 %Concatenate null latency distributions.
                 tNullLats{c} = cell2mat(tempnull);
                 
-                %P-value.
-                [~,Atpval(c)] = kstest2(tNullLats{c},latencies{c});
+                if length(tNullLats{c}) >= critLaps
+                    %P-value.
+                    [~,Atpval(c)] = kstest2(tNullLats{c},latencies{c});
+                else 
+                    Atpval(c) = nan;
+                end
             else 
                 Atpval(c) = nan;
             end
@@ -126,6 +130,6 @@ function graphData = FindCxns(md)
     elapsed = toc;
 
 %% Save. 
-    save('CxnsTEST.mat','graphData','A','Atpval','latencies','tNullLats',...
+    save('Cxns.mat','graphData','A','Atpval','latencies','tNullLats',...
         'mdInfo','elapsed','-v7.3');
 end
