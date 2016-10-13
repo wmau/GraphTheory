@@ -73,7 +73,7 @@ function graphData = FindCxns(md)
                 tempsrc = rasters{src};
                 tempnull = cell(1,B);
                 
-                for i=1:B
+                parfor i=1:B
                     tempnull{i} = sjlLatFinder(permuteTime(tempsrc),rasters{snk});                    
                 end
                 
