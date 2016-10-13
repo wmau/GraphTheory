@@ -58,7 +58,7 @@ function graphData = FindCxns(md)
     p = ProgressBar(100/resolution);
     
     %Perform comparisons.
-    parpool('local');
+    %parpool('local');
     for c=1:nComparisons
         %Get row,column indices.
         [src,snk] = ind2sub([nNeurons,nNeurons],c);
@@ -69,19 +69,23 @@ function graphData = FindCxns(md)
             latencies{c} = sjlLatFinder(rasters{src},rasters{snk});
             
             %Permute time then find latency distribution again.            
-            if ~isempty(latencies{c})
+            if length(latencies{c}) > critLaps
                 tempsrc = rasters{src};
                 tempnull = cell(1,B);
                 
-                parfor i=1:B
+                for i=1:B
                     tempnull{i} = sjlLatFinder(permuteTime(tempsrc),rasters{snk});                    
                 end
                 
                 %Concatenate null latency distributions.
                 tNullLats{c} = cell2mat(tempnull);
                 
-                %P-value.
-                [~,Atpval(c)] = kstest2(tNullLats{c},latencies{c});
+                if length(tNullLats) > critLaps
+                    %P-value.
+                    [~,Atpval(c)] = kstest2(tNullLats{c},latencies{c});
+                else 
+                    Atpval(c) = 0;
+                end
             else 
                 Atpval(c) = nan;
             end
@@ -95,7 +99,7 @@ function graphData = FindCxns(md)
         end
     end
     p.stop;
-    delete(gcp);
+    %delete(gcp);
     
 %% Build adjacency matrix.
     for n=1:nNeurons

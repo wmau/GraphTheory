@@ -39,7 +39,7 @@ function graphData = FindCxns(md)
     tNullLats = cell(nNeurons);
     rasters = cell(1,nNeurons); 
     critLaps = .25 * nRuns; 
-    B = 100;
+    B = 500;
     
     %Builds all the onset rasters. 
     for n=1:nNeurons
@@ -58,8 +58,8 @@ function graphData = FindCxns(md)
     p = ProgressBar(100/resolution);
     
     %Perform comparisons.
-    parpool('local');
-    parfor c=1:nComparisons
+    %parpool('local');
+    for c=1:nComparisons
         %Get row,column indices.
         [src,snk] = ind2sub([nNeurons,nNeurons],c);
         
@@ -72,9 +72,9 @@ function graphData = FindCxns(md)
             if ~isempty(latencies{c})
                 tempsrc = rasters{src};
                 tempnull = cell(1,B);
+                
                 for i=1:B
-                    tempsrc = permuteTime(tempsrc);
-                    tempnull{i} = sjlLatFinder(tempsrc,rasters{snk});                    
+                    tempnull{i} = sjlLatFinder(permuteTime(tempsrc),rasters{snk});                    
                 end
                 
                 %Concatenate null latency distributions.
@@ -95,7 +95,7 @@ function graphData = FindCxns(md)
         end
     end
     p.stop;
-    delete(gcp);
+    %delete(gcp);
     
 %% Build adjacency matrix.
     for n=1:nNeurons
