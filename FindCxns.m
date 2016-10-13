@@ -69,7 +69,7 @@ function graphData = FindCxns(md)
             latencies{c} = sjlLatFinder(rasters{src},rasters{snk});
             
             %Permute time then find latency distribution again.            
-            if length(latencies{c}) > critLaps
+            if length(latencies{c}) >= critLaps
                 tempsrc = rasters{src};
                 tempnull = cell(1,B);
                 
