@@ -34,7 +34,8 @@ function graphData = FindCxns(md)
     
     %Preallocate. 
     Atpval = nan(nNeurons); 
-    A = false(nNeurons); 
+    a = false(nNeurons); 
+    A = false(nNeurons);
     latencies = cell(nNeurons); 
     tNullLats = cell(nNeurons);
     rasters = cell(1,nNeurons); 
@@ -53,13 +54,14 @@ function graphData = FindCxns(md)
     
 %% Construct pairwise spike latencies. 
     %Build progress bar.
+    disp('Performing time shuffles...');
     resolution = 2;
     updateInc = round(nComparisons/(100/resolution));
     p = ProgressBar(100/resolution);
     
     %Perform comparisons.
-    %parpool('local');
-    for c=1:nComparisons
+    parpool('local');
+    parfor c=1:nComparisons
         %Get row,column indices.
         [src,snk] = ind2sub([nNeurons,nNeurons],c);
         
@@ -99,7 +101,7 @@ function graphData = FindCxns(md)
         end
     end
     p.stop;
-    %delete(gcp);
+    delete(gcp);
     
 %% Build adjacency matrix.
     for n=1:nNeurons
@@ -111,15 +113,21 @@ function graphData = FindCxns(md)
         %FDR.
         if ~isempty(pvals)
             [~,pcrit] = fdr_bh(pvals,0.05);
-            A(:,n) = Atpval(:,n) < pcrit;
+            a(:,n) = Atpval(:,n) < pcrit;
         end    
     end
     
+%% 
+    [A,Atrlpval,trlNullLats] = trlShfflTest(md,a,latencies); 
+    
 %% Construct structs.
-    graphData.A = A;
+    graphData.a = a;
+    graphData.A = A; 
     graphData.Atpval = Atpval;
+    graphData.Atrlpval = Atrlpval;
     graphData.latencies = latencies; 
     graphData.tNullLats = tNullLats;
+    graphData.trlNullLats = trlNullLats;
     graphData.Animal = md.Animal;
     graphData.Date = md.Date;
     graphData.Session = md.Session;
@@ -130,6 +138,6 @@ function graphData = FindCxns(md)
     elapsed = toc;
 
 %% Save. 
-    save('Cxns.mat','graphData','A','Atpval','latencies','tNullLats',...
-        'mdInfo','elapsed','-v7.3');
+    save('GRAPH.mat','graphData','a','A','Atpval','Atrlpval','latencies',...
+        'tNullLats','trlNullLats','mdInfo','elapsed','-v7.3');
 end
