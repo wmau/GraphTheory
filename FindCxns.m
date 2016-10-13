@@ -58,7 +58,7 @@ function graphData = FindCxns(md)
     p = ProgressBar(100/resolution);
     
     %Perform comparisons.
-    %parpool('local');
+    parpool('local');
     for c=1:nComparisons
         %Get row,column indices.
         [src,snk] = ind2sub([nNeurons,nNeurons],c);
@@ -80,7 +80,7 @@ function graphData = FindCxns(md)
                 %Concatenate null latency distributions.
                 tNullLats{c} = cell2mat(tempnull);
                 
-                if length(tNullLats) > critLaps
+                if length(tNullLats{c}) >= critLaps
                     %P-value.
                     [~,Atpval(c)] = kstest2(tNullLats{c},latencies{c});
                 else 
@@ -99,7 +99,7 @@ function graphData = FindCxns(md)
         end
     end
     p.stop;
-    %delete(gcp);
+    delete(gcp);
     
 %% Build adjacency matrix.
     for n=1:nNeurons
