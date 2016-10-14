@@ -55,12 +55,12 @@ function graphData = FindCxns(md)
 %% Construct pairwise spike latencies. 
     %Build progress bar.
     disp('Performing time shuffles...');
+   
+    %Perform comparisons.
+    parpool('local');
     resolution = 2;
     updateInc = round(nComparisons/(100/resolution));
     p = ProgressBar(100/resolution);
-    
-    %Perform comparisons.
-    parpool('local');
     parfor c=1:nComparisons
         %Get row,column indices.
         [src,snk] = ind2sub([nNeurons,nNeurons],c);
