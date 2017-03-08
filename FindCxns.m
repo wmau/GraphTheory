@@ -26,16 +26,15 @@ function graphData = FindCxns(md)
     
     %Load necessary variables. 
     load('TimeCells.mat','TodayTreadmillLog','T');   
-    load('Pos_align.mat','FT');
+    load('Pos_align.mat','PSAbool');
    
     %Trim treadmill indices.
     [inds,nRuns] = TrimTrdmllInds(TodayTreadmillLog,T); 
-    nNeurons = size(FT,1); 
+    nNeurons = size(PSAbool,1); 
     
     %Preallocate. 
     Atpval = nan(nNeurons); 
     a = false(nNeurons); 
-    A = false(nNeurons);
     latencies = cell(nNeurons); 
     tNullLats = cell(nNeurons);
     rasters = cell(1,nNeurons); 
@@ -44,7 +43,7 @@ function graphData = FindCxns(md)
     
     %Builds all the onset rasters. 
     for n=1:nNeurons
-        rasters{n} = buildRaster(inds,FT,n);
+        rasters{n} = buildRaster(inds,PSAbool,n);
     end
     
     %Only look at neurons active on the treadmill for more than critLaps.
